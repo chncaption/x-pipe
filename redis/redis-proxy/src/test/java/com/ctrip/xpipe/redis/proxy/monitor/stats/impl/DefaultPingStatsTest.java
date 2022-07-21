@@ -1,5 +1,6 @@
 package com.ctrip.xpipe.redis.proxy.monitor.stats.impl;
 
+import com.ctrip.xpipe.api.endpoint.Endpoint;
 import com.ctrip.xpipe.endpoint.HostPort;
 import com.ctrip.xpipe.proxy.ProxyEndpoint;
 import com.ctrip.xpipe.redis.core.proxy.endpoint.DefaultProxyEndpoint;
@@ -45,6 +46,26 @@ public class DefaultPingStatsTest extends AbstractProxyIntegrationTest {
         pingStats.doTask();
         sleep(100);
         Assert.assertNotNull(pingStats.getPingStatsResult());
+        server.stop();
+    }
+
+    @Test
+    public void getPingStatsResult2() throws Exception {
+
+        int newPort = randomPort();
+        Endpoint newEndpoint = new DefaultProxyEndpoint(String.format("%s://%s:%d",
+                ProxyEndpoint.PROXY_SCHEME.TLS.name(), "127.0.0.1", newPort));
+        DefaultPingStats newPingStats = new DefaultPingStats(resourceManager.getGlobalSharedScheduled(),
+                newEndpoint, resourceManager.getKeyedObjectPool());
+
+        Server server = startServer(newPort, "+PROXY PONG 127.0.0.1:" + newPort + "\r\n");
+        HostPort target = new HostPort("127.0.0.1", newPort);
+        Assert.assertEquals(new PingStatsResult(-1, -1, target, target), newPingStats.getPingStatsResult());
+        newPingStats.start();
+        sleep(100);
+        Assert.assertNotNull(newPingStats.getPingStatsResult());
+        sleep(8000);
+        logger.info("sleep over");
         server.stop();
     }
 
