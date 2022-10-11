@@ -54,6 +54,8 @@ public class DefaultMetaServerConfig extends AbstractCoreConfig implements MetaS
 
 	private static final String KEY_ROUTE_CHOOSE_STRATEGY_TYPE = "route.choose.strategy.type";
 
+	private static final String KEY_IGNORE_CLUSTER_NAMES = "ignore.cluster.names";
+
 	private String defaultConsoleAddress = System.getProperty("consoleAddress", "http://localhost:8080");
 
 	private String defaultRouteChooseStrategyType = RouteChooseStrategyFactory.RouteStrategyType.CRC32_HASH.name();
@@ -156,6 +158,13 @@ public class DefaultMetaServerConfig extends AbstractCoreConfig implements MetaS
 	@Override
 	public int getWaitForMetaSyncDelayMilli() {
 		return getIntProperty(KEY_WAIT_FOR_META_SYNC_MILLI, 0);
+	}
+
+	@Override
+	public Set<String> getIgnoreClusterNames() {
+	    String ignoreClusters = getProperty(KEY_IGNORE_CLUSTER_NAMES, "");
+		String[] split = ignoreClusters.split("\\s*(,|;)\\s*");
+		return Arrays.stream(split).filter(sp -> !StringUtil.isEmpty(sp)).collect(Collectors.toSet());
 	}
 
 	@Override

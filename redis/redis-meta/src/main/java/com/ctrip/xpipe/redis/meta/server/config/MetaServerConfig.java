@@ -41,6 +41,8 @@ public interface MetaServerConfig extends CoreConfig {
 
 	Set<String> getOwnClusterType();
 
+	Set<String> getIgnoreClusterNames();
+
 	boolean shouldCorrectPeerMasterPeriodically();
 
 	long getNewMasterCacheTimeoutMilli();

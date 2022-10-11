@@ -8,6 +8,7 @@ import com.ctrip.xpipe.zk.ZkConfig;
 import com.google.common.collect.Maps;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -167,5 +168,10 @@ public class UnitTestServerConfig implements MetaServerConfig{
 	@Override
 	public String getChooseRouteStrategyType() {
 		return "crc32_hash";
+	}
+
+	@Override
+	public Set<String> getIgnoreClusterNames() {
+	    return new HashSet<>();
 	}
 }

@@ -10,6 +10,7 @@ import com.ctrip.xpipe.observer.NodeDeleted;
 import com.ctrip.xpipe.redis.core.entity.ClusterMeta;
 import com.ctrip.xpipe.redis.core.meta.comparator.ClusterMetaComparator;
 import com.ctrip.xpipe.redis.meta.server.cluster.CurrentClusterServer;
+import com.ctrip.xpipe.redis.meta.server.config.MetaServerConfig;
 import com.ctrip.xpipe.redis.meta.server.keeper.ClusterTypeAware;
 import com.ctrip.xpipe.redis.meta.server.meta.CurrentMetaManager;
 import com.ctrip.xpipe.utils.StringUtil;
@@ -27,6 +28,9 @@ public abstract class AbstractCurrentMetaObserver extends AbstractLifecycleObser
 	
 	@Autowired
 	protected CurrentClusterServer currentClusterServer;
+
+	@Autowired
+	private MetaServerConfig metaServerConfig;
 	
 	@Override
 	protected void doInitialize() throws Exception {
@@ -45,10 +49,11 @@ public abstract class AbstractCurrentMetaObserver extends AbstractLifecycleObser
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void update(Object args, Observable observable) {
-		
+
 		if(args instanceof NodeAdded){
 			ClusterMeta clusterMeta = (ClusterMeta)((NodeAdded)args).getNode();
-			if (supportCluster(clusterMeta)) {
+			if (supportCluster(clusterMeta) &&
+					!metaServerConfig.getIgnoreClusterNames().contains(clusterMeta.getId())) {
 				logger.info("[update][add][{}]cluster_{}", getClass().getSimpleName(), clusterMeta.getDbId());
 				handleClusterAdd(clusterMeta);
 			}
@@ -57,7 +62,8 @@ public abstract class AbstractCurrentMetaObserver extends AbstractLifecycleObser
 		
 		if(args instanceof NodeDeleted){
 			ClusterMeta clusterMeta = (ClusterMeta)((NodeDeleted)args).getNode();
-			if (supportCluster(clusterMeta)) {
+			if (supportCluster(clusterMeta) &&
+					!metaServerConfig.getIgnoreClusterNames().contains(clusterMeta.getId())) {
 				logger.info("[update][delete][{}]cluster_{}", getClass().getSimpleName(), clusterMeta.getDbId());
 				handleClusterDeleted(clusterMeta);
 			}
@@ -66,7 +72,8 @@ public abstract class AbstractCurrentMetaObserver extends AbstractLifecycleObser
 		
 		if(args instanceof ClusterMetaComparator){
 			ClusterMetaComparator clusterMetaComparator = (ClusterMetaComparator)args;
-			if (supportCluster(clusterMetaComparator.getCurrent())) {
+			if (supportCluster(clusterMetaComparator.getCurrent()) &&
+					!metaServerConfig.getIgnoreClusterNames().contains(clusterMetaComparator.getCurrent().getId())) {
 				logger.info("[update][modify][{}]{}", getClass().getSimpleName(), clusterMetaComparator);
 				handleClusterModified(clusterMetaComparator);
 			}
