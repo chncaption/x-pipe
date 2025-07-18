@@ -32,7 +32,7 @@
         <unidal.codegen.version>2.5.8</unidal.codegen.version>
         <unidal.plexus.version>2.5.8</unidal.plexus.version>
         <commons-pool.version>2.3</commons-pool.version>
-        <commons-lang3.version>3.4</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-httpclient.version>4.5.2</commons-httpclient.version>
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <spring-boot-test.version>2.3.12.RELEASE</spring-boot-test.version>
